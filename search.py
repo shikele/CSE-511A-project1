@@ -91,6 +91,7 @@ def depthFirstSearch(problem):
     node_visited = []
     action_taken = []
     node_processed = []
+    last_branching_node_arr = []
     #path = []
     #counter = 0
     #get start node and push it onto the stack
@@ -106,7 +107,7 @@ def depthFirstSearch(problem):
         if len(current_node) == 2:
             current_node = (current_node,'')
         #print(current_node)
-        if current_node[0] in node_visited:
+        if current_node[0] in node_visited or current_node in node_processed:
             #del node_visited[-1]
             #del action_taken[-1]
             #if end_node:
@@ -119,16 +120,44 @@ def depthFirstSearch(problem):
             #print(len(action_stack))
             print("success")
             print len(node_visited)
+            print len(action_taken)
             action_taken = action_taken[1:]
             return action_taken
         #if not end_node:
         
             
 
+        ##This part will take care of the end note situation
+        if end_node: 
+            print(current_node[0])
+            
+            last_branch_node = last_branching_node_arr.pop()
+            distance = abs(last_branch_node[0]-current_node[0][0])+abs(last_branch_node[1]-current_node[0][1])
+            #search
+            while distance >1:
+                last_branch_node = last_branching_node_arr.pop()
+                distance = abs(last_branch_node[0]-current_node[0][0])+abs(last_branch_node[1]-current_node[0][1])
+            #print "Here*****************************************"
+            print last_branch_node
+
+            node_index = node_visited.index(last_branch_node)
+            #print node_visited[:node_index+1]
+            node_visited = node_visited[:node_index+1]
+            action_taken = action_taken[:node_index+1]
+            #print node_visited
+            node_processed.extend(node_visited[node_index:])
+            end_node = False
+
+        
         node_visited.append(current_node[0])
-        print "current node appened", current_node[0]
-        print node_visited
         action_taken.append(current_node[1])
+
+
+
+            
+        #print "current node appened", current_node[0]
+        #print node_visited
+        
         #print action_taken
 
         
@@ -142,9 +171,10 @@ def depthFirstSearch(problem):
 
         if target == 0 :
             print "This is end node*******************************"
-            node_processed.append(current_node[0])
-            del node_visited[-1]
-            del action_taken[-1]
+            end_node = True
+        if target >1:
+            last_branching_node_arr.append(current_node[0])
+            
             
           
             
@@ -162,7 +192,7 @@ def depthFirstSearch(problem):
 
             
         
-        #print("here wait a sec")
+        print("here wait a sec")
             
     print("Fail")
             
