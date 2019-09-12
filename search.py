@@ -121,6 +121,7 @@ def depthFirstSearch(problem):
             print("success")
             print len(node_visited)
             print len(action_taken)
+            action_taken.append(current_node[1])
             action_taken = action_taken[1:]
             return action_taken
         #if not end_node:
@@ -142,10 +143,11 @@ def depthFirstSearch(problem):
 
             node_index = node_visited.index(last_branch_node)
             #print node_visited[:node_index+1]
+            node_processed.extend(node_visited[node_index:])
             node_visited = node_visited[:node_index+1]
             action_taken = action_taken[:node_index+1]
             #print node_visited
-            node_processed.extend(node_visited[node_index:])
+            
             end_node = False
 
         
