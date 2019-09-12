@@ -172,7 +172,10 @@ def depthFirstSearch(problem):
         if target == 0 :
             print "This is end node*******************************"
             end_node = True
-        if target >1:
+        elif target ==2:
+            last_branching_node_arr.append(current_node[0])
+        elif target == 3:
+            last_branching_node_arr.append(current_node[0])
             last_branching_node_arr.append(current_node[0])
             
             
