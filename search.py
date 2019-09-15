@@ -225,6 +225,40 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
+    # nodes to be processed, format: (location, action, action cost)
+    process_queue = util.PriorityQueue()
+
+    # nodes visited, store location -(x,y)
+    node_visited = []
+
+    # get start node and push it onto the stack
+    start_node = problem.getStartState()
+    # create a list[] for each path
+    process_queue.push((start_node, []),0)
+
+    # if the successor fringe node is not the goal state, keep searching
+    while not process_queue.isEmpty():
+
+        current_node = process_queue.pop()
+        if current_node[0] in node_visited:
+            continue
+        if problem.isGoalState(current_node[0]):
+            print("success")
+            # action is the path saved in current node
+            return current_node[1]
+
+        node_visited.append(current_node[0])
+        successors = problem.getSuccessors(current_node[0])
+        # restore the path from the start to current node
+        parent_path = current_node[1]
+        for fringe_node in successors:
+            location = fringe_node[0]
+            # connect the path from current node to each fringe node
+            fringe_path = parent_path + [fringe_node[1]]
+            # push the node to the to-visit stack
+            process_queue.push((location, fringe_path),fringe_node[2])
+
+    print("Fail")
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -237,6 +271,40 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
     "*** YOUR CODE HERE ***"
+    # nodes to be processed, format: (location, action, action cost)
+    process_queue = util.PriorityQueue()
+
+    # nodes visited, store location -(x,y)
+    node_visited = []
+
+    # get start node and push it onto the stack
+    start_node = problem.getStartState()
+    # create a list[] for each path
+    process_queue.push((start_node, []), 0)
+
+    # if the successor fringe node is not the goal state, keep searching
+    while not process_queue.isEmpty():
+
+        current_node = process_queue.pop()
+        if current_node[0] in node_visited:
+            continue
+        if problem.isGoalState(current_node[0]):
+            print("success")
+            # action is the path saved in current node
+            return current_node[1]
+
+        node_visited.append(current_node[0])
+        successors = problem.getSuccessors(current_node[0])
+        # restore the path from the start to current node
+        parent_path = current_node[1]
+        for fringe_node in successors:
+            location = fringe_node[0]
+            # connect the path from current node to each fringe node
+            fringe_path = parent_path + [fringe_node[1]]
+            # push the node to the to-visit stack
+            process_queue.push((location, fringe_path), fringe_node[2])
+
+    print("Fail")
     util.raiseNotDefined()
 
 
