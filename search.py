@@ -302,7 +302,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             # connect the path from current node to each fringe node
             fringe_path = parent_path + [fringe_node[1]]
             # push the node to the to-visit stack
-            process_queue.push((location, fringe_path), fringe_node[2])
+            g_value = fringe_node[2]
+            h_value = heuristic(location,problem)
+            process_queue.push((location, fringe_path), g_value+h_value)
 
     print("Fail")
     util.raiseNotDefined()
