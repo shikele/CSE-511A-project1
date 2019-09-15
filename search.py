@@ -85,48 +85,43 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
+    # nodes to be processed, format: (location, action, action cost)
     process_stack = util.Stack()
-    #action_stack = util.Stack()
     
+    # nodes visited, store location -(x,y)
     node_visited = []
+    # store action - 'South'/'West'/'North'/'East'
     action_taken = []
+    # nodes have been visited but not on the return path, store location -(x,y)
     node_processed = []
+    # nodes still have 2 or more successors that haven't been visited
     last_branching_node_arr = []
-    #path = []
-    #counter = 0
+
+
     #get start node and push it onto the stack
     start_node = problem.getStartState()
     process_stack.push(start_node)
     
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     end_node = False
-    #if the successor fringe not is not the goal state, keep searching
+    #if the successor fringe node is not the goal state, keep searching
     while not process_stack.isEmpty():
         
         current_node = process_stack.pop()
+        # add direction to start node
         if len(current_node) == 2:
             current_node = (current_node,'')
-        #print(current_node)
         if current_node[0] in node_visited or current_node in node_processed:
-            #del node_visited[-1]
-            #del action_taken[-1]
-            #if end_node:
-            #    node_processed.append(current_node[0])
-                
-
             continue
         if problem.isGoalState(current_node[0]):
-            #print(len(process_stack))
-            #print(len(action_stack))
             print("success")
             print len(node_visited)
             print len(action_taken)
             action_taken.append(current_node[1])
+            # exclude action_taken[0] for the start node
             action_taken = action_taken[1:]
             return action_taken
-        #if not end_node:
-        
-            
+
 
         ##This part will take care of the end note situation
         if end_node: 
@@ -138,15 +133,13 @@ def depthFirstSearch(problem):
             while distance >1:
                 last_branch_node = last_branching_node_arr.pop()
                 distance = abs(last_branch_node[0]-current_node[0][0])+abs(last_branch_node[1]-current_node[0][1])
-            #print "Here*****************************************"
             print last_branch_node
 
             node_index = node_visited.index(last_branch_node)
             #print node_visited[:node_index+1]
-            node_processed.extend(node_visited[node_index:])
+            node_processed.extend(node_visited[node_index+1:])
             node_visited = node_visited[:node_index+1]
             action_taken = action_taken[:node_index+1]
-            #print node_visited
             
             end_node = False
 
@@ -154,16 +147,6 @@ def depthFirstSearch(problem):
         node_visited.append(current_node[0])
         action_taken.append(current_node[1])
 
-
-
-            
-        #print "current node appened", current_node[0]
-        #print node_visited
-        
-        #print action_taken
-
-        
-        
         
         successors = problem.getSuccessors(current_node[0])
         target = len(successors)
@@ -174,39 +157,28 @@ def depthFirstSearch(problem):
         if target == 0 :
             print "This is end node*******************************"
             end_node = True
+        # add last_branching_node for (successors haven't been visited -1) to retreat
         elif target ==2:
             last_branching_node_arr.append(current_node[0])
         elif target == 3:
             last_branching_node_arr.append(current_node[0])
             last_branching_node_arr.append(current_node[0])
-            
-            
-          
-            
+
                 
         for fringe_node in successors:
-            
-                #counter += 1
-            #push the visited node to the stack
-            
+            #push the node to the to-visit stack
             process_stack.push(fringe_node)
-            #action_stack.push(fringe_node[1])
-            
           
             print "fringe node is:" ,fringe_node
-
-            
         
         print("here wait a sec")
             
     print("Fail")
             
-    
-    
-    
-    
-    
+
     #util.raiseNotDefined()
+
+
 
 def breadthFirstSearch(problem):
     """
