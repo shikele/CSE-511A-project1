@@ -234,7 +234,7 @@ def uniformCostSearch(problem):
     # get start node and push it onto the stack
     start_node = problem.getStartState()
     # create a list[] for each path
-    process_queue.push((start_node, []),0)
+    process_queue.push((start_node, [], 0),0)
 
     # if the successor fringe node is not the goal state, keep searching
     while not process_queue.isEmpty():
@@ -251,12 +251,15 @@ def uniformCostSearch(problem):
         successors = problem.getSuccessors(current_node[0])
         # restore the path from the start to current node
         parent_path = current_node[1]
+        parent_cost = current_node[2]
         for fringe_node in successors:
             location = fringe_node[0]
             # connect the path from current node to each fringe node
             fringe_path = parent_path + [fringe_node[1]]
+            # keep track of cost on this path
+            fringe_cost = parent_cost + fringe_node[2]
             # push the node to the to-visit stack
-            process_queue.push((location, fringe_path),fringe_node[2])
+            process_queue.push((location, fringe_path, fringe_cost), fringe_cost)
 
     print("Fail")
     util.raiseNotDefined()
@@ -280,7 +283,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     # get start node and push it onto the stack
     start_node = problem.getStartState()
     # create a list[] for each path
-    process_queue.push((start_node, []), 0)
+    process_queue.push((start_node, [], 0), 0)
 
     # if the successor fringe node is not the goal state, keep searching
     while not process_queue.isEmpty():
@@ -297,14 +300,17 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         successors = problem.getSuccessors(current_node[0])
         # restore the path from the start to current node
         parent_path = current_node[1]
+        parent_cost = current_node[2]
         for fringe_node in successors:
             location = fringe_node[0]
             # connect the path from current node to each fringe node
             fringe_path = parent_path + [fringe_node[1]]
+            # keep track of cost on this path
+            fringe_cost = parent_cost + fringe_node[2]
             # push the node to the to-visit stack
-            g_value = fringe_node[2]
+            g_value = fringe_cost
             h_value = heuristic(location,problem)
-            process_queue.push((location, fringe_path), g_value+h_value)
+            process_queue.push((location, fringe_path, g_value), g_value+h_value)
 
     print("Fail")
     util.raiseNotDefined()
