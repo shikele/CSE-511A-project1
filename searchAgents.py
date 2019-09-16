@@ -286,19 +286,16 @@ class CornersProblem(search.SearchProblem):
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
         "*** YOUR CODE HERE ***"
-        
-
         position = state[0]
         corners_visited = state[1]
 
-        if state in self.corners:
-            if state not in corners_visited:
+        if position in self.corners:
+            if position not in corners_visited:
                 corners_visited.append(position)
-
             if len(corners_visited) == 4:
                 return True
-
         return False
+
 
         util.raiseNotDefined()
 
@@ -313,9 +310,12 @@ class CornersProblem(search.SearchProblem):
          required to get there, and 'stepCost' is the incremental
          cost of expanding to that successor
         """
+        # my code starts
         x = state[0][0]
-        y = state[0][0]
+        y = state[0][1]
         corners_visited = state[1]
+        # my code ends
+
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -326,22 +326,38 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-            #x,y = currentPosition
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
             if hitsWall == False:
-
-                
+                # Build a list for current state visited corners
+                visited_corners_list = list(corners_visited)
+                # Define next state coordinates
                 next_state = (nextx, nexty)
-
-                if next_state not in corners_visited and next_state in self.corners:
-                    corners_visited.extend(next_state)
-
+                # Check if next state is a corner
+                #if nextState in self.corners and nextState not in stateVisitedCorners:
+                if next_state not in visited_corners_list and next_state in self.corners:
+                    # Mark corner as visited
+                    visited_corners_list.append(next_state)
+                # Cost is calculated using a lambda function in the class constructor
                 cost = 1
+                # Resend the corner as successor s.t. it gets expanded again to continue the path
+                successors.append(((next_state, visited_corners_list), action, cost))
 
-                successors.append(((next_state, corners_visited), action, cost))
+            #x,y = currentPosition
+            # dx, dy = Actions.directionToVector(action)
+            # nextx, nexty = int(x + dx), int(y + dy)
+            # hitsWall = self.walls[nextx][nexty]
+            #
+            # if hitsWall == False:
+            #     next_state = (nextx, nexty)
+            #     if next_state not in corners_visited and next_state in self.corners:
+            #         #corners_visited.extend(next_state)
+            #         corners_visited.append(next_state)
+            #     cost = 1
+            #     successors.append(((next_state, corners_visited), action, cost))
+        # my code ends
 
         self._expanded += 1
         return successors
@@ -376,31 +392,67 @@ def cornersHeuristic(state, problem):
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    state_location = state[0]
-    corners_visited = state[1]
+    "*** YOUR CODE HERE ***"
+    # Get values from state parameter, which are defined in the previous exercise
+    visitedCorners = state[1]
+    state = state[0]
 
-    corners_not_visited = []
+    # Define a list of unvisited corners to keep track of
+    unvisitedCorners = util.Stack()
 
+    # Start every state with trivial heuristics and build from there
+    heuristic = 0
 
+    # First, look for all the unvisited corners and build a list
     for corner in corners:
-        if corner not in corners_visited:
-            corners_not_visited.append[corner]
+        if corner not in visitedCorners:
+            unvisitedCorners.push(corner)
 
-    while len(corners_not_visited)!= 0:
+    # Loop over each unvisited corner we found
+    while not unvisitedCorners.isEmpty():
 
-        corner_man_distance_list = []
+        cornerdistance = []
 
-        for corner in corners_not_visited:
-            corner_man_distance_list.append([util.manhattanDistance(state_location, corner), corner])
+        for corner in unvisitedCorners.list:
+            # Get corner distances based on the manhattandistance utility
+            #cornerdistance.append([util.manhattanDistance(state, corner), corner])
+            cornerdistance.append([(state[0]-corner[0])**2+(state[1]-corner[1])**2, corner])
 
-        state_location = min(corner_man_distance_list)[1]
-        corners_not_visited.remove(state_location)
+        # Update new coordinates to closest corner
+        state = min(cornerdistance)[1]
 
-        cost = min(corner_man_distance_list)[0]
+        # Remove closest corner to avoid duplicate paths
+        unvisitedCorners.list.remove(state)
 
+        # From the set of corner, get the closest one using build-in min() function
+        cost = min(cornerdistance)[0]
+
+        # Add distance to closest corner to heuristics
         heuristic += cost
 
-    "*** YOUR CODE HERE ***"
+
+    # state_location = state[0]
+    # corners_visited = state[1]
+    #
+    # corners_not_visited = []
+    #
+    # for corner in corners:
+    #     if corner not in corners_visited:
+    #         corners_not_visited.append[corner]
+    #
+    # while len(corners_not_visited) != 0:
+    #
+    #     corner_man_distance_list = []
+    #
+    #     for corner in corners_not_visited:
+    #         corner_man_distance_list.append([util.manhattanDistance(state_location, corner), corner])
+    #
+    #     state_location = min(corner_man_distance_list)[1]
+    #     corners_not_visited.remove(state_location)
+    #
+    #     cost = min(corner_man_distance_list)[0]
+    #
+    #     heuristic += cost
     return heuristic # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
