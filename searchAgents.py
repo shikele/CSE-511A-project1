@@ -393,66 +393,20 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    # Get values from state parameter, which are defined in the previous exercise
-    visitedCorners = state[1]
-    state = state[0]
-
-    # Define a list of unvisited corners to keep track of
-    unvisitedCorners = util.Stack()
-
-    # Start every state with trivial heuristics and build from there
     heuristic = 0
+    corners_visited = state[1]
+    position = state[0]
+    corners_to_visit = [x for x in corners if x not in corners_visited]
+    while len(corners_to_visit) != 0:
+        corner_distances = []
+        for corner in corners_to_visit:
+            corner_distances.append((util.manhattanDistance(position, corner),corner))
+        # min first sort by the first dimension, then by the second
+        min_distance, min_corner = min(corner_distances)
+        heuristic += min_distance
+        corners_to_visit.remove(min_corner)
+        position = min_corner
 
-    # First, look for all the unvisited corners and build a list
-    for corner in corners:
-        if corner not in visitedCorners:
-            unvisitedCorners.push(corner)
-
-    # Loop over each unvisited corner we found
-    while not unvisitedCorners.isEmpty():
-
-        cornerdistance = []
-
-        for corner in unvisitedCorners.list:
-            # Get corner distances based on the manhattandistance utility
-            #cornerdistance.append([util.manhattanDistance(state, corner), corner])
-            cornerdistance.append([(state[0]-corner[0])**2+(state[1]-corner[1])**2, corner])
-
-        # Update new coordinates to closest corner
-        state = min(cornerdistance)[1]
-
-        # Remove closest corner to avoid duplicate paths
-        unvisitedCorners.list.remove(state)
-
-        # From the set of corner, get the closest one using build-in min() function
-        cost = min(cornerdistance)[0]
-
-        # Add distance to closest corner to heuristics
-        heuristic += cost
-
-
-    # state_location = state[0]
-    # corners_visited = state[1]
-    #
-    # corners_not_visited = []
-    #
-    # for corner in corners:
-    #     if corner not in corners_visited:
-    #         corners_not_visited.append[corner]
-    #
-    # while len(corners_not_visited) != 0:
-    #
-    #     corner_man_distance_list = []
-    #
-    #     for corner in corners_not_visited:
-    #         corner_man_distance_list.append([util.manhattanDistance(state_location, corner), corner])
-    #
-    #     state_location = min(corner_man_distance_list)[1]
-    #     corners_not_visited.remove(state_location)
-    #
-    #     cost = min(corner_man_distance_list)[0]
-    #
-    #     heuristic += cost
     return heuristic # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
@@ -544,7 +498,19 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    heuristic = 0
+    # foodGrid.asList() returns positions of all remaining food in current state
+    food_list = foodGrid.asList()
+    while len(food_list)!=0:
+        food_distances = []
+        for food in food_list:
+            food_distances.append((util.manhattanDistance(position, food), food))
+        min_distance, min_food = min(food_distances)
+        heuristic += min_distance
+        food_list.remove(min_food)
+        position = min_food
+
+    return heuristic
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -572,6 +538,25 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
+        # BFS -- the quickest way to find the closest dot
+        process_queue = util.Queue()
+        node_visited = []
+        start_node = problem.getStartState()
+        process_queue.push((start_node, []))
+        while not process_queue.isEmpty():
+            current_node = process_queue.pop()
+            if current_node[0] in node_visited:
+                continue
+            if problem.isGoalState(current_node[0]):
+                return current_node[1]
+            node_visited.append(current_node[0])
+            successors = problem.getSuccessors(current_node[0])
+            parent_path = current_node[1]
+            for fringe_node in successors:
+                location = fringe_node[0]
+                fringe_path = parent_path + [fringe_node[1]]
+                process_queue.push((location, fringe_path))
+
         util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -608,7 +593,11 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if (x,y) in self.food.asList():
+            return True
+        else:
+            return False
+        util.raisefNotDefined()
 
 ##################
 # Mini-contest 1 #
