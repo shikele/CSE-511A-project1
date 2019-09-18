@@ -498,17 +498,68 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
+    #problem.heuristicInfo['wallCount'] = problem.walls.count()
+    
+    #we need to find a joint node there
+
+    #assume it goes to the closest dot is wrong
+    #assume it goes to the closest 
+
+    if foodGrid.count() == 0:
+        return 0
+    #print("*******************************")
+    #print problem.walls
     heuristic = 0
     # foodGrid.asList() returns positions of all remaining food in current state
     food_list = foodGrid.asList()
-    while len(food_list)!=0:
-        food_distances = []
-        for food in food_list:
-            food_distances.append((util.manhattanDistance(position, food), food))
-        min_distance, min_food = min(food_distances)
-        heuristic += min_distance
-        food_list.remove(min_food)
-        position = min_food
+    #while len(food_list)!=0:
+    food_remaining = len(food_list)
+    food_distances = []
+    #position, foodGrid = state
+    hvalue = 0
+    food_available = food_list
+    total_distance = 0
+    """
+    for i in range(0,foodGrid.width):
+        for j in range(0,foodGrid.height):
+            if (foodGrid[i][j] == True):
+                food_location = (i,j)
+                food_available.append(food_location)
+    """
+    if (len(food_list) == 0):
+            return 0        
+    
+    max_distance=((0,0),(0,0),0)
+    
+    for current_food in food_available:
+        for select_food in food_available:
+            if(current_food==select_food):
+                pass
+            else:
+                distance = util.manhattanDistance(current_food,select_food)
+                if(max_distance[2] < distance):
+                    max_distance = (current_food,select_food,distance)
+
+    #print(max_distance)
+    real_max_distance = mazeDistance(max_distance[0], max_distance[1], problem.startingGameState)
+    #print(real_max_distance)
+    if(max_distance[0]==(0,0) and max_distance[1]==(0,0)):
+        hvalue = util.manhattanDistance(position,food_available[0])
+    else: 
+        d1 = util.manhattanDistance(position,max_distance[0])
+        d2 = util.manhattanDistance(position,max_distance[1])
+        hvalue = real_max_distance + min(d1,d2)
+    
+    return hvalue
+    
+    #heuristic += min_distance
+    #food_list.remove(min_food)
+    #position = min_food
+    """
+    for foodHeuristic in food_list:
+        heuristic = mazeDistance(position, foodHeuristic, problem.startingGameState)
+        print heuristic
+    """
 
     return heuristic
 
