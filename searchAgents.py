@@ -515,6 +515,7 @@ def foodHeuristic(state, problem):
     #while len(food_list)!=0:
     food_remaining = len(food_list)
     food_distances = []
+    real_distance = []
     #position, foodGrid = state
     hvalue = 0
     food_available = food_list
@@ -541,14 +542,14 @@ def foodHeuristic(state, problem):
                     max_distance = (current_food,select_food,distance)
 
     #print(max_distance)
-    real_max_distance = mazeDistance(max_distance[0], max_distance[1], problem.startingGameState)
+    #real_max_distance = mazeDistance(max_distance[0], max_distance[1], problem.startingGameState)
     #print(real_max_distance)
     if(max_distance[0]==(0,0) and max_distance[1]==(0,0)):
         hvalue = util.manhattanDistance(position,food_available[0])
     else: 
         d1 = util.manhattanDistance(position,max_distance[0])
         d2 = util.manhattanDistance(position,max_distance[1])
-        hvalue = real_max_distance + min(d1,d2)
+        hvalue = max_distance[2] + min(d1,d2)
     
     return hvalue
     
