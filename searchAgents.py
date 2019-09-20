@@ -498,15 +498,23 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    foodLoc = foodGrid.asList()
-    if position in foodLoc or len(foodLoc) == 0:
+    food_list = foodGrid.asList()
+    #return 0 when there is no food left 
+    if len(food_list) == 0:
         return 0
-    dist = -1
-    for corner in foodLoc:
-        tempVal = mazeDistance(state[0], corner, problem.startingGameState)
-        if tempVal > dist:
-            dist = tempVal
-    return dist
+    #return 0 for all food positions
+    if position in food_list:
+        return 0
+
+    #find the largest maze distance to one of the food in the maze
+    maze_distance_max = -1
+    for food in food_list:
+        current = mazeDistance(position, food, problem.startingGameState)
+        if current >= maze_distance_max:
+            maze_distance_max = current
+
+
+    return maze_distance_max
     
     
     
